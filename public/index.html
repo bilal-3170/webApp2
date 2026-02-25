@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Text Extractor - Powered by Gemini AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>📸 Image Text Extractor</h1>
+            <p class="subtitle">Extract text from images using Google Gemini AI</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="drop-zone" id="dropZone">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="drop-zone-text">Drag & drop your image here</p>
+                    <p class="drop-zone-subtext">or</p>
+                    <label for="imageInput" class="file-input-label">
+                        Browse Files
+                    </label>
+                    <input 
+                        type="file" 
+                        id="imageInput" 
+                        accept="image/jpeg,image/jpg,image/png" 
+                        class="file-input"
+                    >
+                    <p class="file-info">Supported formats: JPG, JPEG, PNG (Max 10MB)</p>
+                </div>
+
+                <!-- Image Preview -->
+                <div class="preview-section" id="previewSection" style="display: none;">
+                    <div class="preview-header">
+                        <h3>Preview</h3>
+                        <button class="btn-remove" id="removeBtn">✕ Remove</button>
+                    </div>
+                    <img id="imagePreview" src="" alt="Preview" class="image-preview">
+                    <p class="file-name" id="fileName"></p>
+                </div>
+
+                <!-- Extract Button -->
+                <button class="btn-extract" id="extractBtn" disabled>
+                    <span id="btnText">Extract Text</span>
+                    <span class="loader" id="loader" style="display: none;"></span>
+                </button>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2>Extracted Text</h2>
+                    <button class="btn-copy" id="copyBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                        </svg>
+                        Copy to Clipboard
+                    </button>
+                </div>
+                <div class="results-content" id="resultsContent">
+                    <!-- Extracted text will be displayed here -->
+                </div>
+            </section>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                </svg>
+                <span id="errorText"></span>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by <strong>Google Gemini AI</strong> | Built with ❤️</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Text copied to clipboard!</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
