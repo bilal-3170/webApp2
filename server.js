@@ -67,9 +67,9 @@ app.post('/api/extract-text', upload.single('image'), async (req, res) => {
 
         console.log(`Processing image: ${req.file.originalname} (${req.file.size} bytes)`);
 
-        // Get the Gemini model (gemini-1.5-flash supports vision)
-        // Using flash model for faster response times
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        // Get the Gemini model with vision capabilities
+        // Using gemini-2.0-flash-exp (newer experimental model)
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 
         // Convert image buffer to base64
         const imageBase64 = req.file.buffer.toString('base64');
@@ -96,8 +96,8 @@ app.post('/api/extract-text', upload.single('image'), async (req, res) => {
         // Send successful response with extracted text
         res.json({
             success: true,
-            extractedText: extractedText,
-            fileName: req.file.originalname
+            text: extractedText,
+            filename: req.file.originalname
         });
 
     } catch (error) {
@@ -122,6 +122,27 @@ app.post('/api/extract-text', upload.single('image'), async (req, res) => {
             success: false,
             error: errorMessage,
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+// Test endpoint to check API key and available models
+app.get('/api/test-key', async (req, res) => {
+    try {
+        console.log('Testing API key with gemini-2.0-flash-exp...');
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+        const result = await model.generateContent('Hello');
+        const response = await result.response;
+        res.json({
+            success: true,
+            message: 'API key is working!',
+            testResponse: response.text()
+        });
+    } catch (error) {
+        console.error('API key test failed:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 });

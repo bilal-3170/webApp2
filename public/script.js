@@ -6,20 +6,20 @@
 // ===========================
 // DOM Elements
 // ===========================
-const uploadArea = document.getElementById('uploadArea');
-const fileInput = document.getElementById('fileInput');
+const dropZone = document.getElementById('dropZone');
+const imageInput = document.getElementById('imageInput');
 const previewSection = document.getElementById('previewSection');
 const imagePreview = document.getElementById('imagePreview');
-const filenameElement = document.getElementById('filename');
+const fileName = document.getElementById('fileName');
 const removeBtn = document.getElementById('removeBtn');
 const extractBtn = document.getElementById('extractBtn');
-const loading = document.getElementById('loading');
+const btnText = document.getElementById('btnText');
+const loader = document.getElementById('loader');
 const errorMessage = document.getElementById('errorMessage');
 const errorText = document.getElementById('errorText');
 const resultsSection = document.getElementById('resultsSection');
-const extractedText = document.getElementById('extractedText');
+const resultsContent = document.getElementById('resultsContent');
 const copyBtn = document.getElementById('copyBtn');
-const newImageBtn = document.getElementById('newImageBtn');
 const toast = document.getElementById('toast');
 
 // ===========================
@@ -32,17 +32,12 @@ let selectedFile = null;
 // ===========================
 
 // File input change event
-fileInput.addEventListener('change', handleFileSelect);
-
-// Upload area click to trigger file input
-uploadArea.addEventListener('click', () => {
-    fileInput.click();
-});
+imageInput.addEventListener('change', handleFileSelect);
 
 // Drag and drop events
-uploadArea.addEventListener('dragover', handleDragOver);
-uploadArea.addEventListener('dragleave', handleDragLeave);
-uploadArea.addEventListener('drop', handleDrop);
+dropZone.addEventListener('dragover', handleDragOver);
+dropZone.addEventListener('dragleave', handleDragLeave);
+dropZone.addEventListener('drop', handleDrop);
 
 // Remove button
 removeBtn.addEventListener('click', resetUpload);
@@ -52,9 +47,6 @@ extractBtn.addEventListener('click', extractTextFromImage);
 
 // Copy button
 copyBtn.addEventListener('click', copyToClipboard);
-
-// New image button
-newImageBtn.addEventListener('click', resetUpload);
 
 // ===========================
 // File Handling Functions
@@ -76,7 +68,7 @@ function handleFileSelect(event) {
 function handleDragOver(event) {
     event.preventDefault();
     event.stopPropagation();
-    uploadArea.classList.add('drag-over');
+    dropZone.classList.add('drag-over');
 }
 
 /**
@@ -85,7 +77,7 @@ function handleDragOver(event) {
 function handleDragLeave(event) {
     event.preventDefault();
     event.stopPropagation();
-    uploadArea.classList.remove('drag-over');
+    dropZone.classList.remove('drag-over');
 }
 
 /**
@@ -94,7 +86,7 @@ function handleDragLeave(event) {
 function handleDrop(event) {
     event.preventDefault();
     event.stopPropagation();
-    uploadArea.classList.remove('drag-over');
+    dropZone.classList.remove('drag-over');
 
     const files = event.dataTransfer.files;
     if (files.length > 0) {
@@ -133,12 +125,13 @@ function displayPreview(file) {
     
     reader.onload = function(e) {
         imagePreview.src = e.target.result;
-        filenameElement.textContent = file.name;
+        fileName.textContent = file.name;
         
         // Hide upload area and show preview
-        uploadArea.style.display = 'none';
+        dropZone.style.display = 'none';
         previewSection.style.display = 'block';
         resultsSection.style.display = 'none';
+        extractBtn.disabled = false;
     };
     
     reader.readAsDataURL(file);
@@ -149,15 +142,15 @@ function displayPreview(file) {
  */
 function resetUpload() {
     selectedFile = null;
-    fileInput.value = '';
+    imageInput.value = '';
     imagePreview.src = '';
-    filenameElement.textContent = '';
+    fileName.textContent = '';
     
     // Show upload area and hide other sections
-    uploadArea.style.display = 'block';
+    dropZone.style.display = 'block';
     previewSection.style.display = 'none';
     resultsSection.style.display = 'none';
-    loading.style.display = 'none';
+    extractBtn.disabled = true;
     hideError();
 }
 
@@ -175,9 +168,9 @@ async function extractTextFromImage() {
     }
 
     // Show loading state
-    loading.style.display = 'block';
-    previewSection.style.display = 'none';
-    resultsSection.style.display = 'none';
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    extractBtn.disabled = true;
     hideError();
 
     try {
@@ -194,26 +187,29 @@ async function extractTextFromImage() {
         const data = await response.json();
 
         // Hide loading
-        loading.style.display = 'none';
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        extractBtn.disabled = false;
 
         if (data.success) {
             // Display extracted text
-            extractedText.textContent = data.text;
+            resultsContent.textContent = data.text;
             resultsSection.style.display = 'block';
+            previewSection.style.display = 'none';
             
             // Show success toast
             showToast('✅ Text extracted successfully!');
         } else {
             // Show error message
             showError(data.error || 'Failed to extract text from image.');
-            previewSection.style.display = 'block';
         }
 
     } catch (error) {
         console.error('Error:', error);
-        loading.style.display = 'none';
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        extractBtn.disabled = false;
         showError('Network error. Please check your connection and try again.');
-        previewSection.style.display = 'block';
     }
 }
 
@@ -253,7 +249,7 @@ function showToast(message) {
  * Copy extracted text to clipboard
  */
 async function copyToClipboard() {
-    const text = extractedText.textContent;
+    const text = resultsContent.textContent;
     
     try {
         await navigator.clipboard.writeText(text);
